@@ -89,10 +89,10 @@ window.onload = () => {
 update = (progress) => {
 
   //Key input
-  if (state.pressedKeys.left)   { state.x -= progress }
-  if (state.pressedKeys.right)  { state.x += progress }
-  if (state.pressedKeys.up)     { state.y -= progress }
-  if (state.pressedKeys.down)   { state.y += progress }
+  if (state.pressedKeys.left)   { state.x -= progress * 0.5 }
+  if (state.pressedKeys.right)  { state.x += progress * 0.5 }
+  if (state.pressedKeys.up)     { state.y -= progress * 0.5 }
+  if (state.pressedKeys.down)   { state.y += progress * 0.5 }
 
   // Flip position at boundaries
   if (state.x > width)  { state.x -= width }
