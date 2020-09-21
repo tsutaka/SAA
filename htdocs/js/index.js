@@ -40,16 +40,16 @@ update = (progress) => {
 
   //Key input
   if (state.pressedKeys.left) {
-    state.x -= progress
+    state.x -= progress * 0.5
   }
   if (state.pressedKeys.right) {
-    state.x += progress
+    state.x += progress * 0.5
   }
   if (state.pressedKeys.up) {
-    state.y -= progress
+    state.y -= progress * 0.5
   }
   if (state.pressedKeys.down) {
-    state.y += progress
+    state.y += progress * 0.5
   }
 
   // Flip position at boundaries
