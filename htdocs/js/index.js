@@ -1,12 +1,15 @@
 
 // Global 
-const width = 1280
-const height = 720
+// canvas
+const board = document.querySelector("#board")
+const ctx = board.getContext("2d")
+const canvas_width = 1280
+const canvas_height = 720
 const tiliW = 64
 const tileH = 64
 let state = {
-  x: (width / 2),
-  y: (height / 2),
+  x: (canvas_width / 2),
+  y: (canvas_height / 2),
   w: tiliW,
   h: tileH,
   pressedKeys: {
@@ -40,16 +43,6 @@ for(let i = 0; i < enemy_max; i++){
     }
   )
 }
-/*
-//create moster test
-enemy_state[0]["exist"] = 1
-enemy_state[0]["type"] = 0
-enemy_state[0]["w"] = tiliW
-enemy_state[0]["h"] = tileH
-enemy_state[0]["x"] = width / 2 - enemy_state[0]["w"] / 2
-enemy_state[0]["y"] = height / 2 - enemy_state[0]["h"] / 2
-enemy_state[0]["hp"] = 5
-*/
 
 let keyMap = {
   68: 'right',  //D
@@ -61,20 +54,24 @@ keydown = (event) => {
   var key = keyMap[event.keyCode]
   state.pressedKeys[key] = true
 }
+window.addEventListener("keydown", keydown, false)
+
 keyup = (event) => {
   var key = keyMap[event.keyCode]
   state.pressedKeys[key] = false
 }
-onClick = (e) =>{
-  var rect = e.target.getBoundingClientRect();
-  state.clickMouse[x] = e.clientX - rect.left;
-  state.clickMouse[y] = e.clientY - rect.top;
-}
-
-window.addEventListener("keydown", keydown, false)
 window.addEventListener("keyup", keyup, false)
 
-//utils function
+click = (e) =>{
+  const rect = board.getBoundingClientRect();
+  const point = {
+    x: Math.round(e.clientX - rect.left),
+    y: Math.round(e.clientY - rect.top)
+  }
+  console.log(String(point.x))
+  console.log(String(point.y))
+}
+window.addEventListener("click", click, false)
 
 //random 0-num
 random = (num) => {
@@ -95,10 +92,10 @@ update = (progress) => {
   if (state.pressedKeys.down)   { state.y += progress * 0.5 }
 
   // Flip position at boundaries
-  if (state.x > width)  { state.x -= width }
-  else if (state.x < 0) { state.x += width }
-  if (state.y > height) { state.y -= height }
-  else if (state.y < 0) { state.y += height }
+  if (state.x > canvas_width)   { state.x -= canvas_width }
+  else if (state.x < 0)         { state.x += canvas_width }
+  if (state.y > canvas_height)  { state.y -= canvas_height }
+  else if (state.y < 0)         { state.y += canvas_height }
 
   //Enemy Create
   if(random(appearance_interval) == 0){
@@ -108,8 +105,8 @@ update = (progress) => {
         enemy_state[i]["type"] = random(2)
         enemy_state[i]["w"] = tiliW
         enemy_state[i]["h"] = tileH
-        enemy_state[i]["x"] = random(width - 1)
-        enemy_state[i]["y"] = random(height - 1)
+        enemy_state[i]["x"] = random(canvas_width - 1)
+        enemy_state[i]["y"] = random(canvas_height - 1)
         enemy_state[i]["hp"] = 5
         break
       }
@@ -151,9 +148,9 @@ update = (progress) => {
           break
       }
       // Delete enemy in out of view
-      if (enemy["x"] > width)   { enemy["exist"] = 0 }
+      if (enemy["x"] > canvas_width)   { enemy["exist"] = 0 }
       else if (enemy["x"] < 0)  { enemy["exist"] = 0 }
-      if (enemy["y"] > height)  { enemy["exist"] = 0 }
+      if (enemy["y"] > canvas_height)  { enemy["exist"] = 0 }
       else if (enemy["y"] < 0)  { enemy["exist"] = 0 }
     }
   })
@@ -162,13 +159,10 @@ update = (progress) => {
 
 //Draw
 draw = () => {
-  // canvas
-  const board = document.querySelector("#board")
-  const ctx = board.getContext("2d")
 
   //fill
   ctx.fillStyle = "rgb(0, 0, 0)"
-  ctx.fillRect(0,0,1280,720);
+  ctx.fillRect(0, 0, canvas_width, canvas_height);
 
   // Draw chara
   const chara_img = new Image()
@@ -180,21 +174,29 @@ draw = () => {
     if(enemy["exist"] == 1){
       //TODO:画像のロードは最初の一回のみにした方が良い
       const enemy_img = new Image()
+      let src_x = 0
+      let src_y = 0
       switch(enemy["type"]){
         case 0:
           enemy_img.src = "img/enemy00.png"
+          src_x = 397
+          src_y = 388
           break
         case 1:
           enemy_img.src = "img/enemy01.png"
+          src_x = 412
+          src_y = 436
           break
         case 2:
           enemy_img.src = "img/enemy02.png"
+          src_x = 246
+          src_y = 323
           break
       }
       ctx.drawImage(
         enemy_img, 
         0, 0,
-        397, 388,  
+        src_x, src_y,  
         enemy["x"], enemy["y"], 
         enemy["w"], enemy["h"])
     }
