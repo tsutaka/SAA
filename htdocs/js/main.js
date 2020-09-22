@@ -33,7 +33,8 @@ let state = {
 
 // Enemy state
 const enemy_speed = 3
-const enemy_distance = tiliW / 2
+const collision_distance = tiliW / 4
+const enemy_distance = tiliW / 5 
 const appearance_interval = 50
 const enemy_max = 100
 let enemy_state = []
@@ -112,7 +113,14 @@ window.onload = () => {
 const title = () => {
   //Input
   if(state.mouse.left_click){
+    //Initialize game
     state.scene = 1
+    enemy_state.forEach((enemy) => {
+      enemy.exist = 0
+      state.attack_interval = 0 
+      state.slash_count = 0 
+      state.wepon_level = 0
+    })
   }
 
   //Draw
@@ -226,7 +234,9 @@ const update = (progress) => {
       else if (enemy["y"] < 0)        { enemy["exist"] = 0 }
 
       //Collision check
-
+      if(y_diff*y_diff + x_diff*x_diff <= collision_distance*collision_distance){
+        state.scene = 2
+      }
     }
   })
 
