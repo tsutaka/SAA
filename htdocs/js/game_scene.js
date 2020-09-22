@@ -1,4 +1,4 @@
-"use strict"
+'use strict'
 
 const updateGame = (progress) => {
 
@@ -17,10 +17,10 @@ const updateGame = (progress) => {
 
   //Attack
   if(state.mouse.left_click &&
-    state.attack_interval == 0){
+    state.attack_interval === 0){
     state.attack_interval = ATTACK_INTERVAL_MAX
     enemy_state.forEach((enemy) => {
-      if(enemy.exist == 1){
+      if(enemy.exist === 1){
         let x_diff = enemy.x - state.x
         let y_diff = enemy.y - state.y
         let distance = enemy.w/2 + state.w/2 + state.wepon_level*TILE_W/2
@@ -42,16 +42,16 @@ const updateGame = (progress) => {
 
 
   //Enemy Create
-  if(getRandomNum(APPEARANCE_INTERVAL) == 0){
+  if(getRandomNum(APPEARANCE_INTERVAL) === 0){
     for(let i = 0; i < enemy_state.length; i++){
-      if(enemy_state[i]["exist"] == 0){
-        enemy_state[i]["exist"] = 1
-        enemy_state[i]["type"] = getRandomNum(2)
-        enemy_state[i]["w"] = TILE_W
-        enemy_state[i]["h"] = TILE_H
-        enemy_state[i]["x"] = getRandomNum(CANVAS_WIDTH - 1)
-        enemy_state[i]["y"] = getRandomNum(CANVAS_HEIGHT - 1)
-        enemy_state[i]["hp"] = 5
+      if(enemy_state[i]['exist'] === 0){
+        enemy_state[i]['exist'] = 1
+        enemy_state[i]['type'] = getRandomNum(2)
+        enemy_state[i]['w'] = TILE_W
+        enemy_state[i]['h'] = TILE_H
+        enemy_state[i]['x'] = getRandomNum(CANVAS_WIDTH - 1)
+        enemy_state[i]['y'] = getRandomNum(CANVAS_HEIGHT - 1)
+        enemy_state[i]['hp'] = 5
         break
       }
     }
@@ -59,37 +59,37 @@ const updateGame = (progress) => {
 
   //Enemy update
   enemy_state.forEach((enemy) => {
-    if(enemy["exist"] == 1){
-      let enemy_x_center = enemy["x"] - (enemy["w"] / 2)
-      let enemy_y_center = enemy["y"] - (enemy["h"] / 2)
+    if(enemy['exist'] === 1){
+      let enemy_x_center = enemy['x'] - (enemy['w'] / 2)
+      let enemy_y_center = enemy['y'] - (enemy['h'] / 2)
       let chara_x_center = state.x - (state.w / 2)
       let chara_y_center = state.y - (state.h / 2)
       let x_diff = chara_x_center - enemy_x_center
       let y_diff = chara_y_center - enemy_y_center
       let rad = Math.atan2(y_diff, x_diff)
 
-      switch(enemy["type"]){
+      switch(enemy['type']){
         case 0:
-          enemy["x"] += Math.floor(Math.random() * (ENEMY_SPEED * 2 + 1)) - ENEMY_SPEED
-          enemy["y"] += Math.floor(Math.random() * (ENEMY_SPEED * 2 + 1)) - ENEMY_SPEED
+          enemy['x'] += Math.floor(Math.random() * (ENEMY_SPEED * 2 + 1)) - ENEMY_SPEED
+          enemy['y'] += Math.floor(Math.random() * (ENEMY_SPEED * 2 + 1)) - ENEMY_SPEED
           break
         case 1:
           if(y_diff*y_diff + x_diff*x_diff >= ENEMY_DISTANCE*ENEMY_DISTANCE){
-            enemy["x"] += Math.cos(rad) * ENEMY_SPEED
-            enemy["y"] += Math.sin(rad) * ENEMY_SPEED
+            enemy['x'] += Math.cos(rad) * ENEMY_SPEED
+            enemy['y'] += Math.sin(rad) * ENEMY_SPEED
           }
           break
         case 2:
-          enemy["x"] -= Math.cos(rad) * ENEMY_SPEED
-          enemy["y"] -= Math.sin(rad) * ENEMY_SPEED
+          enemy['x'] -= Math.cos(rad) * ENEMY_SPEED
+          enemy['y'] -= Math.sin(rad) * ENEMY_SPEED
           break
       }
       
       // Delete enemy in out of view
-      if (enemy["x"] > CANVAS_WIDTH)  { enemy["exist"] = 0 }
-      else if (enemy["x"] < 0)        { enemy["exist"] = 0 }
-      if (enemy["y"] > CANVAS_HEIGHT) { enemy["exist"] = 0 }
-      else if (enemy["y"] < 0)        { enemy["exist"] = 0 }
+      if (enemy['x'] > CANVAS_WIDTH)  { enemy['exist'] = 0 }
+      else if (enemy['x'] < 0)        { enemy['exist'] = 0 }
+      if (enemy['y'] > CANVAS_HEIGHT) { enemy['exist'] = 0 }
+      else if (enemy['y'] < 0)        { enemy['exist'] = 0 }
 
       //Collision check
       if(y_diff*y_diff + x_diff*x_diff <= COLLISION_DISTANCE*COLLISION_DISTANCE){
@@ -103,35 +103,43 @@ const updateGame = (progress) => {
 //Draw
 const drawGame = () => {
 
-  //fill
-  ctx.fillStyle = "rgb(0, 0, 0)"
+  // Clear canvas
+  ctx.fillStyle = 'rgb(0, 0, 0)'
   ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
   // Draw chara
   const chara_img = new Image()
-  chara_img.src = "img/chara01.png"
+  chara_img.src = 'img/chara01.png'
   ctx.drawImage(chara_img, 0, 0, 64, 64, state.x, state.y, state.w, state.h)
+
+  // Draw attack
+  let center_x = state.x + state.w / 2
+  let center_y = state.y + state.h / 2
+  drawSlash(ctx, center_x, center_y, 
+    TILE_W / 2, 
+    Math.PI * (state.attack_interval/2) / ATTACK_INTERVAL_MAX/2, 
+    Math.PI * (state.attack_interval/2 + 1) / ATTACK_INTERVAL_MAX/2)
   
   // Draw Enemy
   enemy_state.forEach((enemy) => {
-    if(enemy["exist"] == 1){
+    if(enemy['exist'] === 1){
       //TODO:画像のロードは最初の一回のみにした方が良い
       const enemy_img = new Image()
       let src_x = 0
       let src_y = 0
-      switch(enemy["type"]){
+      switch(enemy['type']){
         case 0:
-          enemy_img.src = "img/enemy00.png"
+          enemy_img.src = 'img/enemy00.png'
           src_x = 397
           src_y = 388
           break
         case 1:
-          enemy_img.src = "img/enemy01.png"
+          enemy_img.src = 'img/enemy01.png'
           src_x = 412
           src_y = 436
           break
         case 2:
-          enemy_img.src = "img/enemy02.png"
+          enemy_img.src = 'img/enemy02.png'
           src_x = 246
           src_y = 323
           break
@@ -140,20 +148,20 @@ const drawGame = () => {
         enemy_img, 
         0, 0,
         src_x, src_y,  
-        enemy["x"], enemy["y"], 
-        enemy["w"], enemy["h"])
+        enemy['x'], enemy['y'], 
+        enemy['w'], enemy['h'])
 
       //Debug
-      drawCircle(ctx, enemy["x"] + enemy["w"]/2, enemy["y"] + enemy["h"]/2, enemy["w"]/2)
+      drawCircle(ctx, enemy['x'] + enemy['w']/2, enemy['y'] + enemy['h']/2, enemy['w']/2)
     }
   })
 
   //Print text
-  ctx.fillStyle = "orange"
-  ctx.font = "24px serif"
-  ctx.fillText("Slash count:" + state.slash_count, 10, 20)
-  ctx.fillText("Attack itvl:" + state.attack_interval, 10, 40)
-  ctx.fillText("Wepon level:" + state.wepon_level, 10, 60)
+  ctx.fillStyle = 'orange'
+  ctx.font = '24px serif'
+  ctx.fillText('Slash count:' + state.slash_count, 10, 20)
+  ctx.fillText('Attack itvl:' + state.attack_interval, 10, 40)
+  ctx.fillText('Wepon level:' + state.wepon_level, 10, 60)
 
   //Debug
   //Chara

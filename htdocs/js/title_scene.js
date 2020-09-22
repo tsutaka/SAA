@@ -1,4 +1,4 @@
-"use strict"
+'use strict'
 
 const updateTitle = () => {
   //Input
@@ -15,17 +15,17 @@ const updateTitle = () => {
 }
 const drawTitle = () => {
   //fill
-  ctx.fillStyle = "rgb(0, 0, 0)"
+  ctx.fillStyle = 'rgb(0, 0, 0)'
   ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
   //Print text
-  ctx.fillStyle = "orange"
-  ctx.font = "48px serif"
-  ctx.fillText("Swords and Arrows", 
+  ctx.fillStyle = 'orange'
+  ctx.font = '48px serif'
+  ctx.fillText('Swords and Arrows', 
     CANVAS_WIDTH / 2 - 200 , 
     CANVAS_HEIGHT / 2 - 20)
 
-  ctx.font = "24px serif"
-  ctx.fillText("Click to start!", 
+  ctx.font = '24px serif'
+  ctx.fillText('Click to start!', 
     CANVAS_WIDTH / 2 - 70 , 
     CANVAS_HEIGHT / 2 + 100)
 

@@ -1,16 +1,16 @@
-"use strict"
+'use strict'
 
 const keyDown = (event) => {
   var key = KEYMAP[event.keyCode]
   state.pressedKeys[key] = true
 }
-window.addEventListener("keydown", keyDown, false)
+window.addEventListener('keydown', keyDown, false)
 
 const keyUp = (event) => {
   var key = KEYMAP[event.keyCode]
   state.pressedKeys[key] = false
 }
-window.addEventListener("keyup", keyUp, false)
+window.addEventListener('keyup', keyUp, false)
 
 const clickMouseLeft = (e) => {
   const rect = board.getBoundingClientRect();
@@ -21,14 +21,14 @@ const clickMouseLeft = (e) => {
   state.mouse.left_x = point.x
   state.mouse.left_y = point.y
 }
-window.addEventListener("click", clickMouseLeft, false)
+window.addEventListener('click', clickMouseLeft, false)
 
 const mouseDown = (e) => {
   state.mouse.left_click = true
 }
-window.addEventListener("mousedown", mouseDown, false)
+window.addEventListener('mousedown', mouseDown, false)
 
 const mouseUp = (e) => {
   state.mouse.left_click = false
 }
-window.addEventListener("mouseup", mouseUp, false)
+window.addEventListener('mouseup', mouseUp, false)

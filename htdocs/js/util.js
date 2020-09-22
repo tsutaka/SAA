@@ -1,4 +1,4 @@
-"use strict"
+'use strict'
 
 //random 0-num
 const getRandomNum = (num) => {
