@@ -19,6 +19,7 @@ let state = {
     left_click_y: 0
   }, 
   attack_interval: 0, 
+  direction: 0, 
   slash_count: 0, 
   wepon_level: 0, 
   sword_level: {

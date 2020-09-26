@@ -20,6 +20,9 @@ const clickMouseLeft = (e) => {
   }
   state.mouse.left_x = point.x
   state.mouse.left_y = point.y
+  let diff_x = point.x - state.x
+  let diff_y = point.y - state.y
+  state.direction = Math.atan2(diff_y, diff_x)
 }
 window.addEventListener('click', clickMouseLeft, false)
 

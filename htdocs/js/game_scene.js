@@ -74,13 +74,14 @@ const updateGame = (progress) => {
   if(state.mouse.left_click &&
     state.attack_interval === 0){
     state.attack_interval = ATTACK_INTERVAL_MAX
+
+    //Attack collision check
     enemy_state.forEach((enemy) => {
       if(enemy.exist === 1){
         let x_diff = enemy.x - state.x
         let y_diff = enemy.y - state.y
         let distance = enemy.w/2 + state.w/2 + state.wepon_level*TILE_W/2
         
-        //Attack collision check
         if((x_diff*x_diff + y_diff*y_diff) < (distance*distance)){
           enemy.exist = 0
           state.slash_count += 1
@@ -171,11 +172,11 @@ const drawGame = () => {
 
   // Draw attack
   if(state.attack_interval != 0){
-    let center_x = state.x + state.w / 2
-    let center_y = state.y + state.h / 2
+    let center_x = state.x + state.w / 2 + Math.cos(state.direction) * 10
+    let center_y = state.y + state.h / 2 + Math.sin(state.direction) * 10
     let arcPhase = state.attack_interval / ATTACK_INTERVAL_MAX * SWORD_A_TABLE[state.sword_level.arc]
     let arcStep = SWORD_A_TABLE[state.sword_level.arc] / ATTACK_INTERVAL_MAX * 4 
-    let centerArc = 0
+    let centerArc = state.direction
     let startArc = centerArc - SWORD_A_TABLE[state.sword_level.arc] / 2 + arcPhase
     let endArc = startArc + arcStep
     // drawArc(ctx, center_x, center_y,
