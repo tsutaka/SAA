@@ -1,5 +1,60 @@
 'use strict'
 
+let checkLevelUp = () => {
+  if(state.wepon_level < LEVELUP_TABLE.length){
+    if(LEVELUP_TABLE[state.wepon_level] <= state.slash_count){
+      return true
+    }
+  }
+  return false
+}
+
+const levelUp = () => {
+  state.wepon_level += 1
+  
+  //Weapon level up
+  if(state.sword_level.range < WEAPON_LEVEL_MAX || 
+    state.sword_level.velocity < WEAPON_LEVEL_MAX || 
+    state.sword_level.arc < WEAPON_LEVEL_MAX || 
+    state.sword_level.strength < WEAPON_LEVEL_MAX){
+    for(let i = 0; i < 100; i++){
+      let flag = getRandomNum(3)
+      if(flag === 0){
+        if(state.sword_level.range >= WEAPON_LEVEL_MAX){
+          continue
+        }
+        state.sword_level.range += 1
+        break
+      }
+      else if(flag === 1){
+        if(state.sword_level.velocity >= WEAPON_LEVEL_MAX){
+          continue
+        }
+        state.sword_level.velocity += 1
+        break
+      }
+      else if(flag === 2){
+        if(state.sword_level.arc >= WEAPON_LEVEL_MAX){
+          continue
+        }
+        state.sword_level.arc += 1
+        break
+      }
+      else if(flag === 3){
+        if(state.sword_level.strength >= WEAPON_LEVEL_MAX){
+          continue
+        }
+        state.sword_level.strength += 1
+        break
+      }
+
+      if(i === 99){
+        console.log('level up failed.')
+      }
+    }
+  }
+}
+
 const updateGame = (progress) => {
 
   //Key input
@@ -24,20 +79,26 @@ const updateGame = (progress) => {
         let x_diff = enemy.x - state.x
         let y_diff = enemy.y - state.y
         let distance = enemy.w/2 + state.w/2 + state.wepon_level*TILE_W/2
+        
+        //Attack collision check
         if((x_diff*x_diff + y_diff*y_diff) < (distance*distance)){
           enemy.exist = 0
           state.slash_count += 1
-          if(state.wepon_level < LEVELUP_TABLE.length){
-            if(LEVELUP_TABLE[state.wepon_level] <= state.slash_count){
-              state.wepon_level += 1
-            }
+
+          //Level up
+          if(checkLevelUp()){ 
+            levelUp()
           }
         }
       }
     })
   }
   if(state.attack_interval > 0){
-    state.attack_interval -= 1
+    state.attack_interval -= SWORD_V_TABLE[state.sword_level.velocity]
+
+    if(state.attack_interval < 0){
+      state.attack_interval = 0
+    }
   }
 
 
@@ -91,7 +152,7 @@ const updateGame = (progress) => {
       if (enemy['y'] > CANVAS_HEIGHT) { enemy['exist'] = 0 }
       else if (enemy['y'] < 0)        { enemy['exist'] = 0 }
 
-      //Collision check
+      //Collision check Game Over
       if(y_diff*y_diff + x_diff*x_diff <= COLLISION_DISTANCE*COLLISION_DISTANCE){
         state.scene = 2
       }
@@ -107,19 +168,33 @@ const drawGame = () => {
   ctx.fillStyle = 'rgb(0, 0, 0)'
   ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
+
+  // Draw attack
+  if(state.attack_interval != 0){
+    let center_x = state.x + state.w / 2
+    let center_y = state.y + state.h / 2
+    let arcPhase = state.attack_interval / ATTACK_INTERVAL_MAX * SWORD_A_TABLE[state.sword_level.arc]
+    let arcStep = SWORD_A_TABLE[state.sword_level.arc] / ATTACK_INTERVAL_MAX * 4 
+    let centerArc = 0
+    let startArc = centerArc - SWORD_A_TABLE[state.sword_level.arc] / 2 + arcPhase
+    let endArc = startArc + arcStep
+    // drawArc(ctx, center_x, center_y,
+    //   TILE_W * SWORD_R_TABLE[state.sword_level.range] / 2, 
+    //   -1 * SWORD_A_TABLE[state.sword_level.arc] / 2, 
+    //   SWORD_A_TABLE[state.sword_level.arc] / 2, 
+    //   'rgb(100, 0, 0)')
+    drawSlash(ctx, center_x, center_y, 
+      TILE_W * SWORD_R_TABLE[state.sword_level.range] / 2, 
+      startArc, 
+      endArc, 
+      state.sword_level.strength)
+  }
+
   // Draw chara
   const chara_img = new Image()
   chara_img.src = 'img/chara01.png'
   ctx.drawImage(chara_img, 0, 0, 64, 64, state.x, state.y, state.w, state.h)
 
-  // Draw attack
-  let center_x = state.x + state.w / 2
-  let center_y = state.y + state.h / 2
-  drawSlash(ctx, center_x, center_y, 
-    TILE_W / 2, 
-    Math.PI * (state.attack_interval/2) / ATTACK_INTERVAL_MAX/2, 
-    Math.PI * (state.attack_interval/2 + 1) / ATTACK_INTERVAL_MAX/2)
-  
   // Draw Enemy
   enemy_state.forEach((enemy) => {
     if(enemy['exist'] === 1){
@@ -152,7 +227,7 @@ const drawGame = () => {
         enemy['w'], enemy['h'])
 
       //Debug
-      drawCircle(ctx, enemy['x'] + enemy['w']/2, enemy['y'] + enemy['h']/2, enemy['w']/2)
+      // drawCircle(ctx, enemy['x'] + enemy['w']/2, enemy['y'] + enemy['h']/2, enemy['w']/2)
     }
   })
 
@@ -160,12 +235,15 @@ const drawGame = () => {
   ctx.fillStyle = 'orange'
   ctx.font = '24px serif'
   ctx.fillText('Slash count:' + state.slash_count, 10, 20)
-  ctx.fillText('Attack itvl:' + state.attack_interval, 10, 40)
-  ctx.fillText('Wepon level:' + state.wepon_level, 10, 60)
+  let level_print = 'Sword' + (state.wepon_level+1) + '(R:'
+  level_print += state.sword_level.range + '/V:'
+  level_print += state.sword_level.velocity + '/A:'
+  level_print += state.sword_level.arc + '/S:'
+  level_print += state.sword_level.strength + ')'
+  ctx.fillText(level_print, 10, 60)
+
 
   //Debug
   //Chara
-  drawCircle(ctx, state.x + state.w/2, state.y + state.h/2, state.w/2)
-  //Attack area
-  drawCircle(ctx, state.x + state.w/2, state.y + state.h/2, state.w/2 + state.wepon_level*TILE_W/2)
+  // drawCircle(ctx, state.x + state.w/2, state.y + state.h/2, state.w/2)
 }

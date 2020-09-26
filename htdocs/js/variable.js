@@ -20,7 +20,19 @@ let state = {
   }, 
   attack_interval: 0, 
   slash_count: 0, 
-  wepon_level: 0
+  wepon_level: 0, 
+  sword_level: {
+    range: 0, 
+    velocity: 0, 
+    arc: 0, 
+    strength: 0
+  }, 
+  arrow_level: {
+    range: 0, 
+    velocity: 0, 
+    arc: 0, 
+    strength: 0
+  }
 }
 
 // Enemy state

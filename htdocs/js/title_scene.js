@@ -5,11 +5,19 @@ const updateTitle = () => {
   if(state.mouse.left_click){
     //Initialize game
     state.scene = 1
+    state.attack_interval = 0 
+    state.slash_count = 0 
+    state.wepon_level = 0
+    state.sword_level.range = 0
+    state.sword_level.velocity = 0
+    state.sword_level.arc = 0
+    state.sword_level.strength = 0
+    state.arrow_level.range = 0
+    state.arrow_level.velocity = 0
+    state.arrow_level.arc = 0
+    state.arrow_level.strength = 0
     enemy_state.forEach((enemy) => {
       enemy.exist = 0
-      state.attack_interval = 0 
-      state.slash_count = 0 
-      state.wepon_level = 0
     })
   }
 }
